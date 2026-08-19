@@ -55,4 +55,8 @@ contract Voting {
     function getAllTopics() public view returns (Topic[] memory) {
         return topics;
     }
+
+    function getVoteCount(uint256 _topicIndex) public view returns (uint256) {
+        return topics[_topicIndex].voteCount;
+    }
 }
