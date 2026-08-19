@@ -1,0 +1,13 @@
+{
+  "voting.sol": {
+    "__sources__": {}
+  },
+  "Voting.sol": {
+    "__sources__": {
+      "Voting.sol": {
+        "content": "// SPDX-License-Identifier: MIT\r\npragma solidity ^0.8.0;\r\n\r\ncontract Voting {\r\n    // 1. Data Structures (Similar to a struct in C)\r\n    struct Topic {\r\n        string name;\r\n        uint256 voteCount;\r\n    }\r\n\r\n    // 2. State Variables (Permanent storage, like database tables)\r\n    Topic[] public topics;\r\n    \r\n    // Mappings act as highly efficient key-value lookups\r\n    mapping(address => bool) public hasVoted;\r\n    mapping(address => bool) public isRestricted; \r\n    \r\n    address public admin;\r\n\r\n    // 3. Constructor (Runs exactly once during deployment)\r\n    // Takes an array of topic names and an array of restricted account addresses\r\n    constructor(string[] memory _topicNames, address[] memory _restrictedAccounts) {\r\n        admin = msg.sender; // 'msg.sender' is the account deploying the contract\r\n        \r\n        // Populate the topics array\r\n        for(uint i = 0; i < _topicNames.length; i++) {\r\n            topics.push(Topic({\r\n                name: _topicNames[i],\r\n                voteCount: 0\r\n            }));\r\n        }\r\n\r\n        // Set up the restricted accounts list\r\n        for(uint i = 0; i < _restrictedAccounts.length; i++) {\r\n            isRestricted[_restrictedAccounts[i]] = true;\r\n        }\r\n    }\r\n\r\n    // 4. The Voting Function (Modifies state, costs gas)\r\n    function vote(uint256 _topicIndex) public {\r\n        // 'require' acts as our security validation. If any check fails, \r\n        // the transaction instantly reverts and no changes are saved.\r\n        require(!hasVoted[msg.sender], \"Security Error: You have already voted.\");\r\n        require(!isRestricted[msg.sender], \"Security Error: Account is restricted.\");\r\n        require(_topicIndex < topics.length, \"Error: Invalid topic index.\");\r\n\r\n        // Record that this account has now voted\r\n        hasVoted[msg.sender] = true;\r\n        \r\n        // Increment the vote count for the chosen topic\r\n        topics[_topicIndex].voteCount++;\r\n    }\r\n\r\n    // 5. Read-Only Function (View functions are free to call)\r\n    function getAllTopics() public view returns (Topic[] memory) {\r\n        return topics;\r\n    }\r\n}",
+        "file": "Voting.sol"
+      }
+    }
+  }
+}
