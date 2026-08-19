@@ -1,0 +1,15 @@
+{
+  "name": "hedera-deploy",
+  "version": "1.0.0",
+  "description": "Deploy a compiled smart contract to the Hedera Testnet via the Hedera JS SDK and call it.",
+  "type": "module",
+  "main": "deploy.js",
+  "scripts": {
+    "deploy": "node deploy.js",
+    "call": "node call.js"
+  },
+  "dependencies": {
+    "@hashgraph/sdk": "^2.62.0",
+    "dotenv": "^16.4.5"
+  }
+}
