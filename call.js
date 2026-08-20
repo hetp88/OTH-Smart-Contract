@@ -34,14 +34,14 @@ import {
 /* ================================================================== */
 
 // 1. The contract you want to call (e.g. "0.0.1234567").
-const CONTRACT_ID = "0.0.10142326"; // TODO
+const CONTRACT_ID = "0.0.10148859"; // TODO
 
 // 2. "query"   -> read-only view/pure function (free, no state change)
 //    "execute" -> state-changing function (costs gas, produces a receipt status)
-const MODE = "query"; // TODO: "query" | "execute"
+const MODE = "execute"; // TODO: "query" | "execute"
 
 // 3. Name of the Solidity function to call.
-const METHOD_NAME = "getVoteCount"; // TODO
+const METHOD_NAME = "vote"; // TODO
 
 // 4. Gas limit (needed for both a query result and an execute transaction).
 const GAS = 150000; // TODO: adjust if your method needs more
@@ -49,7 +49,7 @@ const GAS = 150000; // TODO: adjust if your method needs more
 // 5. The single return type to decode. Set to null if the method returns nothing.
 //    Supported: "string" | "bool" | "address" | "uint256" | "int256" |
 //               "uint64" | "int64" | "uint32" | "int32" | "bytes" | "bytes32"
-const RETURN_TYPE = "uint256"; // TODO: set to the type your method returns, or null
+const RETURN_TYPE = null; // TODO: set to the type your method returns, or null
 
 /**
  * 6. Build the call arguments here, in the order the Solidity function expects.
@@ -152,14 +152,28 @@ async function main() {
       .setFunction(METHOD_NAME, params);
 
     const txResponse = await tx.execute(client);
-    const receipt = await txResponse.getReceipt(client);
-    status = receipt.status.toString();
 
-    // The return value of a state-changing call lives in the transaction record.
-    const record = await txResponse.getRecord(client);
-    returnValue = record.contractFunctionResult
-      ? decodeReturn(record.contractFunctionResult, RETURN_TYPE)
-      : { value: undefined, type: "void" };
+    try {
+      // getRecord() fetches both the receipt and record in one go.
+      const record = await txResponse.getRecord(client);
+      status = record.receipt.status.toString();
+      
+      returnValue = record.contractFunctionResult
+        ? decodeReturn(record.contractFunctionResult, RETURN_TYPE)
+        : { value: undefined, type: "void" };
+        
+    } catch (err) {
+      // If it reverts, the SDK throws an error but attaches the record to it!
+      status = err.status ? err.status.toString() : "FAILED";
+      
+      // Extract your custom Solidity require() string from the record
+      const revertReason = err.transactionRecord?.contractFunctionResult?.errorMessage;
+      
+      returnValue = { 
+        value: revertReason ? revertReason : "No specific revert reason provided.", 
+        type: "Revert Message" 
+      };
+    }
   } else {
     throw new Error(`Unknown MODE "${MODE}". Use "query" or "execute".`);
   }
