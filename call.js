@@ -34,22 +34,22 @@ import {
 /* ================================================================== */
 
 // 1. The contract you want to call (e.g. "0.0.1234567").
-const CONTRACT_ID = "0.0.xxxxx"; // TODO
+const CONTRACT_ID = "0.0.10142326"; // TODO
 
 // 2. "query"   -> read-only view/pure function (free, no state change)
 //    "execute" -> state-changing function (costs gas, produces a receipt status)
 const MODE = "query"; // TODO: "query" | "execute"
 
 // 3. Name of the Solidity function to call.
-const METHOD_NAME = "myMethod"; // TODO
+const METHOD_NAME = "getVoteCount"; // TODO
 
 // 4. Gas limit (needed for both a query result and an execute transaction).
-const GAS = 100_000; // TODO: adjust if your method needs more
+const GAS = 150000; // TODO: adjust if your method needs more
 
 // 5. The single return type to decode. Set to null if the method returns nothing.
 //    Supported: "string" | "bool" | "address" | "uint256" | "int256" |
 //               "uint64" | "int64" | "uint32" | "int32" | "bytes" | "bytes32"
-const RETURN_TYPE = "string"; // TODO: set to the type your method returns, or null
+const RETURN_TYPE = "uint256"; // TODO: set to the type your method returns, or null
 
 /**
  * 6. Build the call arguments here, in the order the Solidity function expects.
@@ -65,7 +65,7 @@ function buildParams() {
   const params = new ContractFunctionParameters();
   // TODO: add your arguments, e.g.:
   // params.addString("hello");
-  // params.addUint256(42);
+  params.addUint256(0);
   return params;
 }
 

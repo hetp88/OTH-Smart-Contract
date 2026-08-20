@@ -111,6 +111,16 @@ function parseArgs(argv) {
       case "--arg-bool":
         opts.constructorArgs.push(["addBool", rest[++i] === "true"]);
         break;
+      case "--arg-string-array":
+        const strVal = rest[++i];
+        // If the string is empty, pass an empty array, otherwise split it
+        opts.constructorArgs.push(["addStringArray", strVal ? strVal.split(",") : []]);
+        break;
+      case "--arg-address-array":
+        const addrVal = rest[++i];
+        // If the string is empty, pass an empty array, otherwise split and map
+        opts.constructorArgs.push(["addAddressArray", addrVal ? addrVal.split(",").map(toEvmAddress) : []]);
+        break;
       default:
         throw new Error(`Unknown argument: ${token}`);
     }
